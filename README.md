@@ -3,6 +3,8 @@ Developing UNET with a backbone for semantic segmentation
 
 Based on Kaggle competition Dataset.
 
+https://www.kaggle.com/jesperdramsch/siim-acr-pneumothorax-segmentation-data
+
 Project steps:
 
   1- Decompressing the DECOM files
