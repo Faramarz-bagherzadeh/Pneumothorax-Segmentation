@@ -2,6 +2,7 @@
 Developing UNET with a backbone for semantic segmentation
 
 Based on Kaggle competition Dataset.
+
 Project steps:
 
   1- Decompressing the DECOM files
