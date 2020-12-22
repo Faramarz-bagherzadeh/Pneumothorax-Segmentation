@@ -1,0 +1,70 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import keras
+import cv2
+import tensorflow as tf
+import pandas as pd
+import math
+import random
+import pydicom
+import glob
+
+files= glob.glob('E:\\My papers\\pneumothorax segmentation\\Unet\\dataset\\archive\\dicom-images-train\\**\\**\\*.dcm')
+
+def rle2mask(rle, width, height):
+    """
+    RLE to mask conversion provided by competetion organizers with the dataset.
+    """
+    mask= np.zeros(width* height)
+    array = np.asarray([int(x) for x in rle.split()])
+    starts = array[0::2]
+    lengths = array[1::2]
+
+    current_position = 0
+    for index, start in enumerate(starts):
+        current_position += start
+        mask[current_position:current_position+lengths[index]] = 255
+        current_position += lengths[index]
+
+    return mask.reshape(width, height)
+    
+    
+#reading CSV file 
+df=pd.read_csv('dataset\\archive\\train-rle.csv')
+df.head(3)
+
+#finding proper mask from CSV file considering ID of patient 
+i=0
+
+for file in files:
+    try:
+        print(i)
+        i+=1
+        _splited=file.split('\\')[-1]
+        ID=_splited[:-4]
+        encoded_pixel=df.loc[lambda df: df["ImageId"]==ID][' EncodedPixels']
+        img=pydicom.dcmread(file)
+        img=img.pixel_array
+
+        # check if patient has Pneumothorax
+        if encoded_pixel.values[0]==' -1':
+            print ("Pneumothorax Negative")
+            #saving image of patient
+            cv2.imwrite('E:\\My papers\\pneumothorax segmentation\\Unet\\organized_dataset\\train\\image\\{}.jpg'.format(ID),
+                        img)
+            #saving empty mask with patient ID
+            cv2.imwrite('E:\\My papers\\pneumothorax segmentation\\Unet\\organized_dataset\\train\\mask\\{}.jpg'.format(ID),
+                        np.zeros((1024,1024)))
+
+        else:
+            print("Pneumothorax Positive")
+            #saving image of patient
+            cv2.imwrite('E:\\My papers\\pneumothorax segmentation\\Unet\\organized_dataset\\train\\image\\{}.jpg'.format(ID),
+                       img)
+            #saving mask from RLE format with patient ID
+            mask=rle2mask(encoded_pixel.values[0], 1024, 1024)
+            cv2.imwrite('E:\\My papers\\pneumothorax segmentation\\Unet\\organized_dataset\\train\\mask\\{}.jpg'.format(ID),
+                       np.zeros((1024,1024))+mask)
+    except:
+        pass
+
