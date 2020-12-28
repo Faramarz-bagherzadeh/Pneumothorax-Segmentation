@@ -1,0 +1,17 @@
+from albumentations import (
+    Compose, HorizontalFlip, CLAHE, HueSaturationValue,
+    RandomBrightness, RandomContrast, RandomGamma,OneOf,
+    ToFloat, ShiftScaleRotate,GridDistortion, ElasticTransform, JpegCompression, HueSaturationValue,
+    RGBShift, RandomBrightness, RandomContrast, Blur, MotionBlur, MedianBlur, GaussNoise,CenterCrop,
+    IAAAdditiveGaussianNoise,GaussNoise,OpticalDistortion,RandomSizedCrop
+)
+
+my_augmentation_function = Compose([HorizontalFlip(p=0.2),
+    OneOf([
+        RandomContrast(),
+        RandomGamma(),
+        RandomBrightness(),
+         ], p=0.2),
+    RandomSizedCrop(min_max_height=(400, 500), height=img_size[0], width=img_size[0],p=0.1),
+    ToFloat(max_value=1)
+],p=0.1)
